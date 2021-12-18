@@ -1,0 +1,3 @@
+/home/wuyi/xiangmu/poorjson/poorjson/CMakeFiles/rebuild_cache.dir
+/home/wuyi/xiangmu/poorjson/poorjson/CMakeFiles/edit_cache.dir
+/home/wuyi/xiangmu/poorjson/poorjson/CMakeFiles/poorjson.dir

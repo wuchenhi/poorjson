@@ -1,0 +1,24 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/wuyi/xiangmu/poorjson/poorjson/poorjson.cpp
+poorjson.h
+/home/wuyi/xiangmu/poorjson/poorjson/poorjson.h
+assert.h
+-
+errno.h
+-
+math.h
+-
+stdlib.h
+-
+iostream
+-
+
+/home/wuyi/xiangmu/poorjson/poorjson/poorjson.h
+
