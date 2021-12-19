@@ -72,34 +72,50 @@
 5. 
    断言的使用，当程序以 release 配置编译时，`assert()` 不会做检测；而当在 debug 配置时，则会在运行时检测 `assert(cond)` 中的条件是否为真（非 0），断言失败会直接令程序崩溃，利于程序调试。
 
-6. 
-   命名空间namespace的使用。命名空间namespace和枚举类的使用可以在定义变量时更加“嚣张”，毕竟要使用枚举类的元素时还要加上enum class的名称::。
-
+6. 命名空间namespace的使用。命名空间namespace和枚举类的使用可以在定义变量时更加“嚣张”，毕竟要使用枚举类的元素时还要加上enum class的名称::。
+   
+6. 在生成json时，由于已经被声明为const，再赋值给它会出错，用const_cast可以实现。
+   
+   ```
+   /*const_cast 将对象的常量性移除，唯一有能力的C++-style转型操作符*/
+   c.json =const_cast<char*>(c.json); 
+   ```
+   
+   string是可变长的，用于临时储存json生成的结果，C++11以后，标准库提供了std::to_string辅助函数转化各类型为一个字符串，但要把*string 转为char*  *赋值给json，需要自定义函数 char* * strTochar(string s) 实现。
+   
+   ```
+   case (json_type::NUMBER): s=to_string(v->n); break; 
+   ```
+   
+   
+   
 7. cmake共享库的编写和使用，简单的CMakeLists.txt编写使用。
 
-~~~
-#共享库的CMakeLists.txt
-cmake_minimum_required (VERSION 3.10)
-project (poorjson)
-
-# C++11 编译  FIXME
-set(CMAKE_CXX_STANDARD 11)
-
-add_library(poorjson SHARED poorjson.cpp poorjson.h )
-
-~~~
 ```
-#调用共享库的test的CMakeLists.txt
-cmake_minimum_required(VERSION 3.10)
+	#共享库的CMakeLists.txt
+	cmake_minimum_required (VERSION 3.10)
+	project (poorjson)
 
-#C++11 编译
-set(CMAKE_CXX_STANDARD 11)
+	# C++11 编译  FIXME
+	set(CMAKE_CXX_STANDARD 11)
 
-set(TEST_SRC test.cpp)
-ADD_EXECUTABLE(test ${TEST_SRC})
+	add_library(poorjson SHARED poorjson.cpp poorjson.h )
+```
 
-#链接 MySharedLib 库
-target_link_libraries(test poorjson)
+
+
+```
+	#调用共享库的test的CMakeLists.txt
+	cmake_minimum_required(VERSION 3.10)
+
+	#C++11 编译
+	set(CMAKE_CXX_STANDARD 11)
+
+	set(TEST_SRC test.cpp)
+	ADD_EXECUTABLE(test ${TEST_SRC})
+
+	#链接 MySharedLib 库
+	target_link_libraries(test poorjson)
 ```
 
 ### json库的实现参考son-tutorial，链接如下：
