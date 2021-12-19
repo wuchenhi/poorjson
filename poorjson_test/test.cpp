@@ -4,6 +4,8 @@
 #include <string>
 #include "../poorjson/poorjson.h" //相对路径
 
+#include <iostream>
+using namespace  std;
 
 using namespace poorjson;
 static int main_ret = 0;
@@ -168,6 +170,50 @@ static void test_parse()
     test_parse_number();
 }
 
+static void test_stringify_null()
+{
+    json_value v;
+    v.type = json_type::NULL1;
+    char* x = json_stringify(&v);
+    cout<<x<<endl;
+}
+
+static void test_stringify_true()
+{
+    json_value v;
+    v.type = json_type::TRUE;
+    char* x = json_stringify(&v);
+    cout<<x<<endl;
+}
+
+static void test_stringify_false()
+ {
+    json_value v;
+    v.type = json_type::FALSE;
+    char* x = json_stringify(&v);
+    cout<<x<<endl;
+ }
+
+static void test_stringify_number()
+ {
+    json_value v;
+    v.type = json_type::NUMBER;
+    v.n = 1.21;
+    char* x = json_stringify(&v);
+    cout<<x<<endl;
+ }
+
+
+static void test_stringify()
+{
+    test_stringify_null();
+    test_stringify_true();
+    test_stringify_false();
+    test_stringify_number();
+}
+  
+       
+
 
 
 
@@ -176,6 +222,7 @@ int main()
     json_value v;
     v.type = json_type::FALSE;
     test_parse();
+    test_stringify();
     printf("%d/%d (%3.2f%%) passed\n", test_pass, test_count, test_pass * 100.0 / test_count);
     return main_ret;
 }

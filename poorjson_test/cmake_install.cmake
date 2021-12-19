@@ -1,4 +1,4 @@
-# Install script for directory: /home/wuyi/xiangmu/poorjson/poorjson_test
+# Install script for directory: /home/wuyi/poorjson/poorjson_test
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -45,5 +45,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/home/wuyi/xiangmu/poorjson/poorjson_test/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/home/wuyi/poorjson/poorjson_test/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

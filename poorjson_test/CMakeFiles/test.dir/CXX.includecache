@@ -6,9 +6,11 @@
 
 #IncludeRegexTransform: 
 
-/home/wuyi/xiangmu/poorjson/poorjson/poorjson.h
+/home/wuyi/poorjson/poorjson/poorjson.h
+stddef.h
+-
 
-/home/wuyi/xiangmu/poorjson/poorjson_test/test.cpp
+/home/wuyi/poorjson/poorjson_test/test.cpp
 stdio.h
 -
 stdlib.h
@@ -16,5 +18,7 @@ stdlib.h
 string
 -
 ../poorjson/poorjson.h
-/home/wuyi/xiangmu/poorjson/poorjson/poorjson.h
+/home/wuyi/poorjson/poorjson/poorjson.h
+iostream
+-
 
