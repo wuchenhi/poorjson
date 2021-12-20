@@ -81,42 +81,64 @@
    c.json =const_cast<char*>(c.json); 
    ```
    
-   string是可变长的，用于临时储存json生成的结果，C++11以后，标准库提供了std::to_string辅助函数转化各类型为一个字符串，但要把*string 转为char*  *赋值给json，需要自定义函数 char* * strTochar(string s) 实现。
+   string是可变长的，用于临时储存json生成的结果，C++11以后，标准库提供了std::to_string辅助函数转化各类型为一个字符串，
    
    ```
    case (json_type::NUMBER): s=to_string(v->n); break; 
    ```
    
+   同样，要把*string 转为char*  * 赋值给json，可自定义函数 char*  strTochar(string s) 实现。但是malloc 的内存没有free，会导致内存泄露。
    
+   ```
+   char* strTochar(string s){
+       char *data;
+       int len = s.size();
+       data = (char *)malloc(len+1);
+       s.copy(data,len,0);
+       return data;
+   }
+   ```
    
-7. cmake共享库的编写和使用，简单的CMakeLists.txt编写使用。
+   事实上可用c_str() 将*string 转为char*  * 。
+   
+   ```
+   const char* c_str() const noexcept;
+   ```
+   
+   用  valgrind --leak-check=full ./test 检测无内存泄露
+   
+   ==8760== All heap blocks were freed -- no leaks are possible
+   
+8. cmake共享库的编写和使用，简单的CMakeLists.txt编写使用。
 
-```
-	#共享库的CMakeLists.txt
-	cmake_minimum_required (VERSION 3.10)
-	project (poorjson)
+   ```
+   #共享库的CMakeLists.txt
+   cmake_minimum_required (VERSION 3.10)
+   project (poorjson)
+   
+   #C++11 编译
+   set(CMAKE_CXX_STANDARD 11)
+   
+   add_library(poorjson SHARED poorjson.cpp poorjson.h )
+   ```
 
-	# C++11 编译  FIXME
-	set(CMAKE_CXX_STANDARD 11)
+   
 
-	add_library(poorjson SHARED poorjson.cpp poorjson.h )
-```
+   ```
+   #调用共享库的test的CMakeLists.txt
+   cmake_minimum_required(VERSION 3.10)
+   
+   #C++11 编译
+   set(CMAKE_CXX_STANDARD 11)
+   
+   set(TEST_SRC test.cpp)
+   ADD_EXECUTABLE(test ${TEST_SRC})
+   
+   #链接 MySharedLib 库
+   target_link_libraries(test poorjson)
+   ```
 
-
-
-```
-	#调用共享库的test的CMakeLists.txt
-	cmake_minimum_required(VERSION 3.10)
-
-	#C++11 编译
-	set(CMAKE_CXX_STANDARD 11)
-
-	set(TEST_SRC test.cpp)
-	ADD_EXECUTABLE(test ${TEST_SRC})
-
-	#链接 MySharedLib 库
-	target_link_libraries(test poorjson)
-```
+   
 
 ### json库的实现参考son-tutorial，链接如下：
 

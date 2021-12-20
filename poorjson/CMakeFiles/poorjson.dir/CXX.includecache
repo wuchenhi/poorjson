@@ -19,6 +19,8 @@ math.h
 -
 stdlib.h
 -
+memory
+-
 string
 -
 iostream
