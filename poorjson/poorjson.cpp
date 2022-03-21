@@ -2,12 +2,13 @@
 
 
 #include <assert.h>
-
+#include <vector>
 
 #include <errno.h>   /* errno, ERANGE */
 #include <math.h>    /* HUGE_VAL */
 #include <stdlib.h>  /* NULL, strtod() */
-
+#include <memory>    /*shared_point*/
+#include <string>
 
 #include <iostream>
 
@@ -24,12 +25,12 @@ public:
 };
 
 
+
 template<typename T>
 inline bool ISDIGIT(const T& ch)        
 {
    return ((ch) >= '0' && (ch) <= '9');
 }
-
 
 template<typename T>
 inline bool ISDIGIT1TO9(const T& ch)        
@@ -37,14 +38,12 @@ inline bool ISDIGIT1TO9(const T& ch)
    return ((ch) >= '1' && (ch) <= '9');
 }
 
-
-
-
 inline void EXPECT(json_context* c, const char& ch)   //不加const 会报错：非常量引用必须是左值
 {
     assert(*c->json == (ch)); //fixme
     c->json++;
 }
+
 
 
 //判断空格
@@ -133,7 +132,6 @@ int poor_parse_value(json_context* c, json_value* v) {
 
 }
 
-
 //解析json   传入的根节点指针 v  TODO！
 int json_parse(json_value* v, const char* json)//"null"
 {
@@ -152,6 +150,32 @@ int json_parse(json_value* v, const char* json)//"null"
     return rt;
 }
 
+/*string 转为char*    内存泄露 
+char* strTochar(string s){
+    shared_ptr<char> data;
+     int len = s.size();
+    //data = (char *)malloc(len+1);
+    s.copy(data,len,0);
+}
+*/
+
+/*string是可变长的，用于临时储存生成的结果 */
+char* json_stringify(const json_value* v ){
+    json_context c;
+    string s; 
+    switch (v->type) {
+        case (json_type::NULL1):  s="null "; break;
+        case (json_type::FALSE):  s="false "; break;
+        case (json_type::TRUE):   s="true "; break;
+        case (json_type::NUMBER): s=to_string(v->n); break; //C++11，标准库提供了std::to_string辅助函数转化各类型为一个字符串
+    }
+    c.json = const_cast<char*>(c.json); //const_cast 将对象的常量性移除，唯一有能力的C++-style转型操作符
+    c.json = s.c_str();
+    // c.json = strTochar(s);
+    return const_cast<char*>(c.json);
+}
+
+
 
 json_type json_get_type(const json_value* v)
 {
@@ -166,7 +190,5 @@ double json_get_number(const json_value* v)
     return v->n;
 }
 
-
-
-
 }
+

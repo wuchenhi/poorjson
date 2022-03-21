@@ -2,6 +2,7 @@
 #define POORJSON_H__
 /*宏的名字唯一，习惯以 `_H__` 作为后缀*/
 
+#include <stddef.h> //size_t
 
 namespace poorjson{
     /**JSON 中有 6 种数据类型，如果把 true 和 false 当作两个类型就是 7 种
@@ -27,9 +28,14 @@ namespace poorjson{
         json_type type;
      };
    
+    
     /* API 函数:解析 JSON*/
     int json_parse(json_value* v, const char* json);
+
    
+    /* API 函数:生成 JSON*/
+    char* json_stringify(const json_value* v);
+
     enum class return_json{
         OK = 0,
         EXPECT_VALUE,       //只有空白
@@ -45,6 +51,7 @@ namespace poorjson{
 
     double json_get_number(const json_value* v);
 
+    
 
 }
 

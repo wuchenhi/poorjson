@@ -44,10 +44,10 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/wuyi/xiangmu/poorjson/poorjson
+CMAKE_SOURCE_DIR = /home/wuyi/poorjson/poorjson
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/wuyi/xiangmu/poorjson/poorjson
+CMAKE_BINARY_DIR = /home/wuyi/poorjson/poorjson
 
 #=============================================================================
 # Directory level rules for the build root directory
@@ -74,14 +74,14 @@ clean: CMakeFiles/poorjson.dir/clean
 CMakeFiles/poorjson.dir/all:
 	$(MAKE) -f CMakeFiles/poorjson.dir/build.make CMakeFiles/poorjson.dir/depend
 	$(MAKE) -f CMakeFiles/poorjson.dir/build.make CMakeFiles/poorjson.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/wuyi/xiangmu/poorjson/poorjson/CMakeFiles --progress-num=1,2 "Built target poorjson"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/wuyi/poorjson/poorjson/CMakeFiles --progress-num=1,2 "Built target poorjson"
 .PHONY : CMakeFiles/poorjson.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/poorjson.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/wuyi/xiangmu/poorjson/poorjson/CMakeFiles 2
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/wuyi/poorjson/poorjson/CMakeFiles 2
 	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/poorjson.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/wuyi/xiangmu/poorjson/poorjson/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/wuyi/poorjson/poorjson/CMakeFiles 0
 .PHONY : CMakeFiles/poorjson.dir/rule
 
 # Convenience name for target.

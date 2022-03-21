@@ -6,10 +6,12 @@
 
 #IncludeRegexTransform: 
 
-/home/wuyi/xiangmu/poorjson/poorjson/poorjson.cpp
+/home/wuyi/poorjson/poorjson/poorjson.cpp
 poorjson.h
-/home/wuyi/xiangmu/poorjson/poorjson/poorjson.h
+/home/wuyi/poorjson/poorjson/poorjson.h
 assert.h
+-
+vector
 -
 errno.h
 -
@@ -17,8 +19,14 @@ math.h
 -
 stdlib.h
 -
+memory
+-
+string
+-
 iostream
 -
 
-/home/wuyi/xiangmu/poorjson/poorjson/poorjson.h
+/home/wuyi/poorjson/poorjson/poorjson.h
+stddef.h
+-
 

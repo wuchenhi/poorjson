@@ -4,7 +4,7 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
-  "/home/wuyi/xiangmu/poorjson/poorjson/poorjson.cpp" "/home/wuyi/xiangmu/poorjson/poorjson/CMakeFiles/poorjson.dir/poorjson.cpp.o"
+  "/home/wuyi/poorjson/poorjson/poorjson.cpp" "/home/wuyi/poorjson/poorjson/CMakeFiles/poorjson.dir/poorjson.cpp.o"
   )
 set(CMAKE_CXX_COMPILER_ID "GNU")
 
