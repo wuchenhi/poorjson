@@ -64,24 +64,19 @@ static_cast<int>(return_json::OK)
 ~~~
 程序中还留着的宏， 比如`__LINE__` 这个编译器提供的宏，代表编译时该行的行号。如果用内联函数，每次的行号便都会相同，不方便调试。对于宏中会出现一些“无聊的事情”，参考 “leptjson”中宏的编写技巧 来避免。
 
+4.断言的使用，当程序以 release 配置编译时，`assert()` 不会做检测；而当在 debug 配置时，则会在运行时检测 `assert(cond)` 中的条件是否为真（非 0），断言失败会直接令程序崩溃，利于程序调试。
 
-4.右值引用，临时变量提高效率。《effective C++》条款20，宁以 pass-by-reference-to-const 替换 pass-by-value，by-value是C++继承C的方式，缺省情况下by-value，效率较低。const是必要的，不这样做可能会被改变，VScode下不加const会报错：非常量引用必须是左值。
-
-
-5.断言的使用，当程序以 release 配置编译时，`assert()` 不会做检测；而当在 debug 配置时，则会在运行时检测 `assert(cond)` 中的条件是否为真（非 0），断言失败会直接令程序崩溃，利于程序调试。
+5.命名空间namespace的使用。命名空间namespace和枚举类的使用可以在定义变量时更加“嚣张”，毕竟要使用枚举类的元素时还要加上enum class的名称::。
 
 
-6.命名空间namespace的使用。命名空间namespace和枚举类的使用可以在定义变量时更加“嚣张”，毕竟要使用枚举类的元素时还要加上enum class的名称::。
-
-
-7.cmake共享库的编写和使用，简单的CMakeLists.txt编写使用。
+6.cmake共享库的编写和使用，简单的CMakeLists.txt编写使用。
 ~~~
 #共享库的CMakeLists.txt
 cmake_minimum_required (VERSION 3.10)
 project (poorjson)
 
 
-# C++11 编译  FIXME
+# C++11 编译  
 set(CMAKE_CXX_STANDARD 11)
 
 
