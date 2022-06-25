@@ -1,3 +1,0 @@
-/home/wuyi/poorjson/poorjson_test/CMakeFiles/rebuild_cache.dir
-/home/wuyi/poorjson/poorjson_test/CMakeFiles/edit_cache.dir
-/home/wuyi/poorjson/poorjson_test/CMakeFiles/test.dir
