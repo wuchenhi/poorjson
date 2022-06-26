@@ -30,6 +30,13 @@ enum class json_type {
 // JSON 是一个树形结构，节点用 `json_value` 类表示
 class json_value {
 public:     //FIXME
+    //获取类型的函数 FIXME
+    json_type json_get_type();
+
+    double json_get_number();
+
+    const char* json_get_string();
+public:
     double n;
     std::string s;
     json_type type;
@@ -50,15 +57,10 @@ enum class return_json {
     NUMBER_TOO_BIG,
     MISS_QUOTATION_MARK,
     INVALID_STRING_ESCAPE,
-    INVALID_STRING_CHAR
+    INVALID_STRING_CHAR,
+    INVALID_UNICODE_HEX,
+    INVALID_UNICODE_SURROGATE
 };
-
-//获取类型的函数 FIXME
-json_type json_get_type(const json_value* v);
-
-double json_get_number(const json_value* v);
-
-const char* json_get_string(const json_value* v);
 
 } //namespace poorjson
 

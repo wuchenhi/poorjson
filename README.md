@@ -2,7 +2,6 @@
 
 为什么叫poorjson，上高中英语课的时候，同学和我说“You are so poor in English.”，我现在也“so poor in C++”，这个json库真的很poor。
 
-
 ### json库的功能如下：
 
 1. 把 JSON 文本解析为一个树状数据结构（parse）。
@@ -10,6 +9,11 @@
 3. 把数据结构转换成 JSON 文本（stringify）。
 
 ### 使用步骤：
+
+```
+cd poorjson_test
+make
+```
 
 #### 共享库制作：
 
@@ -21,7 +25,7 @@
 #### 共享库调用：
 
 1. cd poorjson_test
-2. make .
+2. cmake .
 3. make
 
 ### 涉及的知识如下：

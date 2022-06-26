@@ -110,26 +110,116 @@ static int poor_parse_number(json_context* c, json_value* v) {
     return static_cast<int>(return_json::OK);
 }
 
-//判断 string
+// 解析 4 位十六进数字，存储为码点 `u`
+static const char* parse_hex4(const char* p, unsigned* u) {
+    int i;
+    *u = 0;
+    for (i = 0; i < 4; i++) {
+        char ch = *p++;
+        *u <<= 4;
+        if      (ch >= '0' && ch <= '9')  *u |= ch - '0';
+        else if (ch >= 'A' && ch <= 'F')  *u |= ch - ('A' - 10);
+        else if (ch >= 'a' && ch <= 'f')  *u |= ch - ('a' - 10);
+        else return NULL;
+    }
+    return p;
+}
+
+//把码点编码成 UTF-8，写进缓冲区
+static void encode_utf8(json_context* c, unsigned u) {
+    if (u <= 0x7F) 
+        c->str += (u & 0xFF);
+    else if (u <= 0x7FF) {
+        c->str += (0xC0 | ((u >> 6) & 0xFF));
+        c->str += (0x80 | ( u       & 0x3F));
+    }
+    else if (u <= 0xFFFF) {
+        c->str += (0xE0 | ((u >> 12) & 0xFF));
+        c->str += (0x80 | ((u >>  6) & 0x3F));
+        c->str += (0x80 | ( u        & 0x3F));
+    }
+    else {
+        assert(u <= 0x10FFFF);
+        c->str += (0xF0 | ((u >> 18) & 0xFF));
+        c->str += (0x80 | ((u >> 12) & 0x3F));
+        c->str += (0x80 | ((u >>  6) & 0x3F));
+        c->str += (0x80 | ( u        & 0x3F));
+    }
+}
+
+//判断 string  FIXME 
+//TEST_STRING("Hello\nWorld", "\"Hello\\nWorld\"");
 static int poor_parse_string(json_context* c, json_value* v) {
-    EXPECT(c, '\"');
+    EXPECT(c, '\"');//已经跳过 \" 了
+    ///cout << *(c->json)<<endl;
+    unsigned u, u2;
     const char* p = c->json;
     while(1) {
         char ch = *p++;
+        //cout << ch <<endl;
         switch (ch) {
-        case '\"':
-            v->s = c->str;
-            v->type = json_type::STRING;
-            c->json = p;
-            return static_cast<int>(return_json::OK);
-        case '\0'://?
-            return static_cast<int>(return_json::MISS_QUOTATION_MARK);
-        default:
-            c->str += ch;
+            case '\"':
+                v->s = c->str;
+                v->type = json_type::STRING;
+                c->json = p;
+                return static_cast<int>(return_json::OK);
+            case '\\':// \\就是一个字符
+                switch (*p++) {
+                    case '\"': c->str += '\"'; break;
+                    case '\\': c->str += '\\'; break;
+                    case '/':  c->str += '/';  break;
+                    case 'b':  c->str += '\b'; break;
+                    case 'f':  c->str += '\f'; break;
+                    case 'n':  c->str += '\n'; break;
+                    case 'r':  c->str += '\r'; break;
+                    case 't':  c->str += '\t'; break;
+                    case 'u': 
+                        if (!(p = parse_hex4(p, &u)))
+                            return static_cast<int>(return_json::INVALID_UNICODE_HEX);
+                        if (u >= 0xD800 && u <= 0xDBFF) { /* surrogate pair */
+                            if (*p++ != '\\')
+                                return static_cast<int>(return_json::INVALID_UNICODE_SURROGATE);
+                            if (*p++ != 'u')
+                                return static_cast<int>(return_json::INVALID_UNICODE_SURROGATE);
+                            if (!(p = parse_hex4(p, &u2)))
+                                return static_cast<int>(return_json::INVALID_UNICODE_HEX);
+                            if (u2 < 0xDC00 || u2 > 0xDFFF)
+                                return static_cast<int>(return_json::INVALID_UNICODE_SURROGATE);
+                            u = (((u - 0xD800) << 10) | (u2 - 0xDC00)) + 0x10000;
+                        }
+                        encode_utf8(c, u);
+                        break;
+                    default:
+                        return static_cast<int>(return_json::INVALID_STRING_ESCAPE);
+                }
+            //case '\0':// 为什么会进入这里
+                //return static_cast<int>(return_json::MISS_QUOTATION_MARK);
+            default:
+                if ((unsigned char)ch < 0x20)
+                    return static_cast<int>(return_json::INVALID_STRING_CHAR);
+                c->str += ch;
         }
     }
 }
 
+static int poor_parse_value(json_context* c, json_value* v);
+
+//TODO
+static int poor_parse_array(json_context* c, json_value* v) {
+    size_t i, size = 0;
+    int ret;
+    EXPECT(c, '[');
+    poor_parse_whitespace(c);
+    if (*c->json == ']') {
+        c->json++;
+        v->type = json_type::ARRAY;
+
+        return static_cast<int>(return_json::OK);
+    }
+    while(1) {
+
+    }
+}
 int poor_parse_value(json_context* c, json_value* v) {
     switch (*c->json) {
         case 't':  return poor_parse_true(c, v);
@@ -137,6 +227,7 @@ int poor_parse_value(json_context* c, json_value* v) {
         case 'n':  return poor_parse_null(c, v);
         case '"':  return poor_parse_string(c, v);
         case '\0': return static_cast<int>(return_json::EXPECT_VALUE);
+        case '[]': return poor_parse_array(c, v);
         default:   return poor_parse_number(c, v);
     }
 }
@@ -178,20 +269,19 @@ const char* json_stringify(const json_value* v ){
     //return const_cast<char*>(c.json);
 }
 
-json_type json_get_type(const json_value* v) {
-    assert(v != nullptr);
-    return v->type;
+json_type json_value::json_get_type() {
+    return type;
 }
 
 //仅当 json_type == NUMBER 时，n 才表示 JSON 数字的数值
-double json_get_number(const json_value* v) {
-    assert(v != nullptr && v->type == json_type::NUMBER);
-    return v->n;
+double json_value::json_get_number() {
+    assert(type == json_type::NUMBER);
+    return n;
 }
 
-const char* json_get_string(const json_value* v) {
-    assert(v != nullptr && v->type == json_type::STRING);
-    return v->s.c_str();
+const char* json_value::json_get_string() {
+    assert(type == json_type::STRING);
+    return s.c_str();
 }
 
 } //namespace poorjson

@@ -34,79 +34,107 @@ inline void EXPECT_EQ_DOUBLE(const T &expect, const T& actual) {
     EXPECT_EQ_BASE((expect) == (actual), expect, actual, "%.17g");
 }
 
-static void test_parse_null() {
+void test_parse_null() {
     json_value v;
     v.type = json_type::FALSE;
 
     EXPECT_EQ_INT(static_cast<int>(return_json::OK), json_parse(&v, "null"));
-    EXPECT_EQ_INT(static_cast<int>(json_type::NULL1),static_cast<int>(json_get_type(&v)));
+    EXPECT_EQ_INT(static_cast<int>(json_type::NULL1),static_cast<int>(v.json_get_type()));
 }
 
-static void test_parse_true() {
+void test_parse_true() {
     json_value v;
     v.type = json_type::FALSE;
 
     EXPECT_EQ_INT(static_cast<int>(return_json::OK), json_parse(&v, "true"));
-    EXPECT_EQ_INT(static_cast<int>(json_type::TRUE),static_cast<int>(json_get_type(&v)));
+    EXPECT_EQ_INT(static_cast<int>(json_type::TRUE),static_cast<int>(v.json_get_type()));
 }
 
-static void test_parse_false() {
+void test_parse_false() {
     json_value v;
     v.type = json_type::TRUE;
 
     EXPECT_EQ_INT(static_cast<int>(return_json::OK), json_parse(&v, "false"));
-    EXPECT_EQ_INT(static_cast<int>(json_type::FALSE),static_cast<int>(json_get_type(&v)));
+    EXPECT_EQ_INT(static_cast<int>(json_type::FALSE),static_cast<int>(v.json_get_type()));
 }
 
-static void test_parse_expect_value() {
+void test_parse_expect_value() {
     json_value v;
     v.type = json_type::FALSE;
 
     EXPECT_EQ_INT(static_cast<int>(return_json::EXPECT_VALUE), json_parse(&v, " "));
-    EXPECT_EQ_INT(static_cast<int>(json_type::NULL1),static_cast<int>(json_get_type(&v)));
+    EXPECT_EQ_INT(static_cast<int>(json_type::NULL1),static_cast<int>(v.json_get_type()));
 
     v.type = json_type::FALSE;
 
     EXPECT_EQ_INT(static_cast<int>(return_json::EXPECT_VALUE), json_parse(&v, ""));
-    EXPECT_EQ_INT(static_cast<int>(json_type::NULL1),static_cast<int>(json_get_type(&v)));
+    EXPECT_EQ_INT(static_cast<int>(json_type::NULL1),static_cast<int>(v.json_get_type()));
 }
-
-static void test_parse_invalid_value() {
+void test_parse_invalid_value() {
     json_value v;
     v.type = json_type::FALSE;
 
     EXPECT_EQ_INT(static_cast<int>(return_json::INVALID_VALUE), json_parse(&v, "nul"));
-    EXPECT_EQ_INT(static_cast<int>(json_type::NULL1),static_cast<int>(json_get_type(&v)));
+    EXPECT_EQ_INT(static_cast<int>(json_type::NULL1),static_cast<int>(v.json_get_type()));
 
     v.type = json_type::FALSE;
 
     EXPECT_EQ_INT(static_cast<int>(return_json::INVALID_VALUE), json_parse(&v, "?"));  
-    EXPECT_EQ_INT(static_cast<int>(json_type::NULL1),static_cast<int>(json_get_type(&v)));
+    EXPECT_EQ_INT(static_cast<int>(json_type::NULL1),static_cast<int>(v.json_get_type()));
 }
 
-static void test_parse_root_not_singular() {
+void test_parse_root_not_singular() {
     json_value v;
     v.type = json_type::FALSE;
 
     EXPECT_EQ_INT(static_cast<int>(return_json::ROOT_NOT_SINGULAR), json_parse(&v, "null x"));  
-    EXPECT_EQ_INT(static_cast<int>(json_type::NULL1),static_cast<int>(json_get_type(&v)));
+    EXPECT_EQ_INT(static_cast<int>(json_type::NULL1),static_cast<int>(v.json_get_type()));
 }
 
-template<typename M,typename N>
-inline void TEST_NUMBER(const M& expect, const N* json){
+template<typename T1,typename T2>
+inline void TEST_NUMBER(const T1& expect, const T2* json){
     json_value v;
     EXPECT_EQ_INT(static_cast<int>(return_json::OK), json_parse(&v, json));
-    EXPECT_EQ_INT(static_cast<int>(json_type::NUMBER), static_cast<int>(json_get_type(&v)));
-    EXPECT_EQ_DOUBLE(expect, static_cast<double>(json_get_number(&v)));
+    EXPECT_EQ_INT(static_cast<int>(json_type::NUMBER), static_cast<int>(v.json_get_type()));
+    EXPECT_EQ_DOUBLE(expect, static_cast<double>(v.json_get_number()));
+}
+template<typename T1,typename T2>
+inline void TEST_STRING(const T1& expect, const T2* json) {
+    json_value v;
+    //json_init(&v);
+    EXPECT_EQ_INT(static_cast<int>(return_json::OK), json_parse(&v, json));
+    EXPECT_EQ_INT(static_cast<int>(json_type::STRING), static_cast<int>(v.json_get_type()));
+    //const char* ch = json_get_string(&v);
+    //cout << ch << endl;
+    //json_free(&v);
+}
+template<typename T1,typename T2>
+inline void TEST_ARRAY(const T1& expect, const T2* json) {
+    json_value v;
+
+    EXPECT_EQ_INT(static_cast<int>(return_json::OK), json_parse(&v, json));
+    EXPECT_EQ_INT(static_cast<int>(json_type::ARRAY), static_cast<int>(v.json_get_type()));
+
 }
 
 static void test_parse_string() {
     json_value v;
     v.type = json_type::FALSE;
 
+    TEST_STRING("", "\"\"");
+    TEST_STRING("Hello", "\"Hello\"");
+    TEST_STRING("Hello\nWorld", "\"Hello\\nWorld\"");
+    TEST_STRING("\" \\ / \b \f \n \r \t", "\"\\\" \\\\ \\/ \\b \\f \\n \\r \\t\"");
+    TEST_STRING("Hello\0World", "\"Hello\\u0000World\"");
+    TEST_STRING("\x24", "\"\\u0024\"");         /* Dollar sign U+0024 */
+    TEST_STRING("\xC2\xA2", "\"\\u00A2\"");     /* Cents sign U+00A2 */
+    TEST_STRING("\xE2\x82\xAC", "\"\\u20AC\""); /* Euro sign U+20AC */
+    TEST_STRING("\xF0\x9D\x84\x9E", "\"\\uD834\\uDD1E\"");  /* G clef sign U+1D11E */
+    TEST_STRING("\xF0\x9D\x84\x9E", "\"\\ud834\\udd1e\"");  /* G clef sign U+1D11E */
     EXPECT_EQ_INT(static_cast<int>(return_json::OK), json_parse(&v, "\"strstr\""));
-    EXPECT_EQ_INT(static_cast<int>(json_type::STRING),static_cast<int>(json_get_type(&v)));
-    const char* ch = json_get_string(&v);
+    EXPECT_EQ_INT(static_cast<int>(json_type::STRING),static_cast<int>(v.json_get_type()));
+    json_parse(&v, "\"Hello\\nWorld\"");//有问题
+    const char* ch = v.json_get_string();
     cout << ch << endl;
 }
 static void test_parse_number() {
@@ -140,6 +168,15 @@ static void test_parse_number() {
     TEST_NUMBER(-1.7976931348623157e+308, "-1.7976931348623157e+308");
 }
 
+
+static void test_parse_array() {
+    json_value v;
+    v.type = json_type::FALSE;
+
+    //TEST_ARRAY(123, "[123]");
+
+}
+
 static void test_parse() {
     test_parse_null();
     test_parse_true();
@@ -148,7 +185,8 @@ static void test_parse() {
     test_parse_invalid_value();
     test_parse_root_not_singular();
     test_parse_number();
-    
+    test_parse_array();
+
     test_parse_string();
 }
 
@@ -197,11 +235,16 @@ static void test_stringify() {
     test_stringify_string();
 }
 
+
 int main() {
     json_value v;
     v.type = json_type::FALSE;
     test_parse();
     test_stringify();
+    //json_parse(&v, "\"Hello\\nWorld\"");//有问题  "\"\\u0024\""
+    //json_parse(&v, "\"\\u0024\"");
+    //const char* ch = json_get_string(&v);
+    //cout << ch << endl;
     printf("%d/%d (%3.2f%%) passed\n", test_pass, test_count, test_pass * 100.0 / test_count);
     return main_ret;
 }
